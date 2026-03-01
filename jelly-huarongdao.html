@@ -13,8 +13,8 @@
   <title>小猫探险家：果冻合成华容道</title>
   <style>
     :root {
-      --bg1: #fff5c5;
-      --bg2: #d8f4ff;
+      --bg1: #ffe4f2;
+      --bg2: #ffc9e4;
       --card: rgba(255, 255, 255, 0.72);
       --radius: 20px;
       --text: #445271;
@@ -31,7 +31,7 @@
       font-family: "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", "Arial Rounded MT Bold", sans-serif;
       background:
         radial-gradient(circle at 15% 20%, #ffd9eb 0 26%, transparent 27%),
-        radial-gradient(circle at 84% 78%, #d4ffe9 0 23%, transparent 24%),
+        radial-gradient(circle at 84% 78%, #ffd2e8 0 23%, transparent 24%),
         linear-gradient(140deg, var(--bg1), var(--bg2));
       padding: 16px;
       touch-action: manipulation;
@@ -86,8 +86,8 @@
 
     .btn.install {
       min-width: 78px;
-      background: linear-gradient(135deg, #7ec7ff, #79e2c8);
-      box-shadow: 0 8px 16px rgba(106, 199, 219, 0.3);
+      background: linear-gradient(135deg, #ff8fbe, #ff76ad);
+      box-shadow: 0 8px 16px rgba(236, 120, 170, 0.34);
     }
 
     .hud {
@@ -185,7 +185,7 @@
       display: grid;
       place-items: center;
       text-align: center;
-      background: linear-gradient(140deg, #ffe3f1, #fff0bc);
+      background: linear-gradient(140deg, #ffd7ef, #ffb9df);
       color: #5a5b77;
       font-weight: 900;
       font-size: 12px;
@@ -217,7 +217,7 @@
       width: 100%;
       aspect-ratio: 1;
       border-radius: 24px;
-      background: linear-gradient(145deg, rgba(255, 255, 255, 0.95), rgba(245, 255, 254, 0.85));
+      background: linear-gradient(145deg, rgba(255, 246, 252, 0.98), rgba(255, 228, 242, 0.9));
       box-shadow: inset 0 8px 22px rgba(173, 197, 235, 0.25);
       overflow: hidden;
       touch-action: none;
@@ -348,6 +348,75 @@
       white-space: nowrap;
     }
 
+    .server-panel {
+      margin-top: 10px;
+      border-radius: 16px;
+      padding: 10px;
+      background: rgba(255, 255, 255, 0.88);
+      box-shadow: inset 0 2px 8px rgba(163, 189, 226, 0.2);
+      color: #4f6388;
+    }
+
+    .server-row {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 8px;
+      align-items: center;
+    }
+
+    .nickname-input {
+      border: 0;
+      min-height: 40px;
+      border-radius: 12px;
+      padding: 0 12px;
+      font-size: 14px;
+      font-weight: 800;
+      color: #3f4f72;
+      background: rgba(236, 247, 255, 0.9);
+      outline: none;
+    }
+
+    .nickname-input:focus {
+      box-shadow: 0 0 0 2px rgba(121, 185, 255, 0.55);
+    }
+
+    .save-btn {
+      border: 0;
+      min-height: 40px;
+      border-radius: 12px;
+      padding: 0 12px;
+      font-size: 14px;
+      font-weight: 900;
+      color: #fff;
+      background: linear-gradient(135deg, #ff8fbe, #ff76ad);
+      cursor: pointer;
+    }
+
+    .rank-text {
+      margin: 8px 0 0;
+      min-height: 18px;
+      font-size: 13px;
+      font-weight: 900;
+      color: #50638a;
+    }
+
+    .leaderboard-list {
+      margin: 8px 0 0;
+      padding: 0;
+      list-style: none;
+      display: grid;
+      gap: 5px;
+    }
+
+    .leaderboard-item {
+      display: flex;
+      justify-content: space-between;
+      gap: 8px;
+      font-size: 13px;
+      font-weight: 800;
+      color: #55688f;
+    }
+
     .install-guide {
       position: fixed;
       inset: 0;
@@ -366,7 +435,7 @@
     .guide-card {
       width: min(92vw, 420px);
       border-radius: 22px;
-      background: linear-gradient(150deg, #fff1f9, #fff6cc 52%, #dbfff0);
+      background: linear-gradient(150deg, #ffe8f6, #ffd3eb 52%, #ffbfdc);
       box-shadow: 0 20px 42px rgba(67, 88, 127, 0.3);
       padding: 14px;
     }
@@ -402,7 +471,7 @@
       font-size: 14px;
       font-weight: 900;
       color: #fff;
-      background: linear-gradient(135deg, #7ec7ff, #79e2c8);
+      background: linear-gradient(135deg, #ff8fbe, #ff76ad);
       cursor: pointer;
     }
 
@@ -431,7 +500,7 @@
       text-align: center;
       background:
         radial-gradient(circle at 20% 15%, rgba(255, 255, 255, 0.65) 0 25%, transparent 26%),
-        linear-gradient(140deg, #ffe0f0, #fff3b8 52%, #d0fff0);
+        linear-gradient(140deg, #ffd7ef, #ffc2e3 52%, #ffacd7);
       box-shadow: 0 24px 45px rgba(73, 99, 142, 0.28);
       transform: scale(0.8);
       will-change: transform, opacity;
@@ -550,6 +619,14 @@
     </div>
     <section id="board" class="board" aria-label="4x4 合成华容道棋盘"></section>
     <p class="status" id="statusText" aria-live="polite"></p>
+    <section class="server-panel" aria-label="服务器排行">
+      <div class="server-row">
+        <input id="nicknameInput" class="nickname-input" type="text" maxlength="24" placeholder="输入昵称（例如：Alice）" />
+        <button id="saveScoreBtn" class="save-btn" type="button">上传成绩</button>
+      </div>
+      <p class="rank-text" id="rankText">我的全球排名：未提交</p>
+      <ul class="leaderboard-list" id="leaderboardList"></ul>
+    </section>
     <div class="install-row">
       <p class="install-tip" id="installTip"> </p>
       <span class="version-tag">v1.0.1</span>
@@ -581,6 +658,10 @@
       const guideSteps = document.getElementById('guideSteps');
       const guideInstallBtn = document.getElementById('guideInstallBtn');
       const guideCloseBtn = document.getElementById('guideCloseBtn');
+      const nicknameInput = document.getElementById('nicknameInput');
+      const saveScoreBtn = document.getElementById('saveScoreBtn');
+      const rankText = document.getElementById('rankText');
+      const leaderboardList = document.getElementById('leaderboardList');
 
       const confettiCanvas = document.getElementById('confetti');
       const confettiCtx = confettiCanvas.getContext('2d');
@@ -652,6 +733,99 @@
         state.bestScore = state.score;
         bestNum.textContent = String(state.bestScore);
         window.localStorage.setItem('cat-explorer-best-score', String(state.bestScore));
+      }
+
+      function readNickname() {
+        const raw = window.localStorage.getItem('cat-explorer-nickname') || '';
+        nicknameInput.value = raw.slice(0, 24);
+      }
+
+      function saveNickname(name) {
+        window.localStorage.setItem('cat-explorer-nickname', name);
+      }
+
+      function getOrCreatePlayerId() {
+        const key = 'cat-explorer-player-id';
+        const existing = (window.localStorage.getItem(key) || '').trim();
+        if (/^[A-Za-z0-9_-]{8,80}$/.test(existing)) return existing;
+
+        let created = '';
+        if (window.crypto && typeof window.crypto.randomUUID === 'function') {
+          created = `p_${window.crypto.randomUUID().replace(/-/g, '')}`;
+        } else {
+          created = `p_${Date.now().toString(36)}_${Math.random().toString(36).slice(2, 12)}`;
+        }
+        window.localStorage.setItem(key, created);
+        return created;
+      }
+
+      function renderLeaderboard(top) {
+        leaderboardList.innerHTML = '';
+        if (!Array.isArray(top) || top.length === 0) {
+          const empty = document.createElement('li');
+          empty.className = 'leaderboard-item';
+          empty.textContent = '暂无排行记录';
+          leaderboardList.appendChild(empty);
+          return;
+        }
+
+        top.slice(0, 10).forEach((item) => {
+          const li = document.createElement('li');
+          li.className = 'leaderboard-item';
+          li.textContent = `#${item.rank} ${item.name} - ${item.score}`;
+          leaderboardList.appendChild(li);
+        });
+      }
+
+      function setMyRank(me) {
+        if (!me) {
+          rankText.textContent = '我的全球排名：未提交';
+          return;
+        }
+        rankText.textContent = `我的全球排名：第 ${me.rank} 名（${me.score} 分）`;
+      }
+
+      async function loadLeaderboard() {
+        try {
+          const playerId = getOrCreatePlayerId();
+          const res = await fetch(`./api/leaderboard?playerId=${encodeURIComponent(playerId)}`, { cache: 'no-store' });
+          if (!res.ok) throw new Error('load failed');
+          const data = await res.json();
+          setMyRank(data.me);
+          renderLeaderboard(data.top);
+        } catch {
+          renderLeaderboard([]);
+          rankText.textContent = '服务器未连接，无法读取全球排行';
+        }
+      }
+
+      async function submitScore() {
+        const name = nicknameInput.value.trim().slice(0, 24);
+        if (!name) {
+          rankText.textContent = '请先输入昵称';
+          return;
+        }
+
+        saveNickname(name);
+        const playerId = getOrCreatePlayerId();
+        saveScoreBtn.disabled = true;
+        saveScoreBtn.textContent = '上传中...';
+        try {
+          const res = await fetch('./api/score', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ playerId, name, score: state.score })
+          });
+          if (!res.ok) throw new Error('submit failed');
+          const data = await res.json();
+          setMyRank(data.me);
+          renderLeaderboard(data.top);
+        } catch {
+          rankText.textContent = '上传失败：请确认服务器已启动';
+        } finally {
+          saveScoreBtn.disabled = false;
+          saveScoreBtn.textContent = '上传成绩';
+        }
       }
 
       function setupInstallUX() {
@@ -1221,8 +1395,10 @@
         layoutMetrics();
         paintSlots();
         readBestScore();
+        readNickname();
         refreshHud();
         reset();
+        loadLeaderboard();
         setupInstallUX();
         registerServiceWorker();
 
@@ -1260,6 +1436,11 @@
         resetBtn.addEventListener('click', () => {
           ensureAudio();
           reset();
+        });
+
+        saveScoreBtn.addEventListener('click', submitScore);
+        nicknameInput.addEventListener('keydown', (e) => {
+          if (e.key === 'Enter') submitScore();
         });
 
         window.addEventListener('resize', onResize, { passive: true });
