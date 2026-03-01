@@ -1,0 +1,18 @@
+{
+  "name": "小猫探险家",
+  "short_name": "小猫探险家",
+  "id": "./jelly-huarongdao.html",
+  "start_url": "./jelly-huarongdao.html",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#fff5c5",
+  "theme_color": "#ffd9eb",
+  "icons": [
+    {
+      "src": "./icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}

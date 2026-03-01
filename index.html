@@ -1,0 +1,1263 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <meta name="theme-color" content="#ffd9eb" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+  <meta name="apple-mobile-web-app-title" content="小猫探险家" />
+  <link rel="manifest" href="./manifest.webmanifest" />
+  <link rel="icon" href="./icon.svg" type="image/svg+xml" />
+  <link rel="apple-touch-icon" href="./icon.svg" />
+  <title>小猫探险家：果冻合成华容道</title>
+  <style>
+    :root {
+      --bg1: #fff5c5;
+      --bg2: #d8f4ff;
+      --card: rgba(255, 255, 255, 0.72);
+      --radius: 20px;
+      --text: #445271;
+      --accent: #ff8db9;
+    }
+
+    * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      display: grid;
+      place-items: center;
+      font-family: "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", "Arial Rounded MT Bold", sans-serif;
+      background:
+        radial-gradient(circle at 15% 20%, #ffd9eb 0 26%, transparent 27%),
+        radial-gradient(circle at 84% 78%, #d4ffe9 0 23%, transparent 24%),
+        linear-gradient(140deg, var(--bg1), var(--bg2));
+      padding: 16px;
+      touch-action: manipulation;
+      overflow: hidden;
+    }
+
+    .game-wrap {
+      width: min(94vw, 440px);
+      background: var(--card);
+      border-radius: 28px;
+      padding: 16px;
+      backdrop-filter: blur(6px);
+      box-shadow: 0 18px 45px rgba(86, 110, 148, 0.18);
+      position: relative;
+      z-index: 2;
+    }
+
+    .header {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 10px;
+      align-items: center;
+      margin-bottom: 10px;
+    }
+
+    .header-actions {
+      display: flex;
+      gap: 8px;
+    }
+
+    .title {
+      margin: 0;
+      font-size: clamp(22px, 5vw, 30px);
+      color: var(--text);
+      font-weight: 900;
+      letter-spacing: 0.4px;
+    }
+
+    .btn {
+      border: 0;
+      border-radius: 16px;
+      min-height: 52px;
+      min-width: 92px;
+      padding: 0 16px;
+      font-size: 16px;
+      font-weight: 900;
+      color: #fff;
+      background: linear-gradient(135deg, #ff9dc6, #ffb774);
+      box-shadow: 0 8px 16px rgba(255, 152, 173, 0.34);
+      cursor: pointer;
+    }
+
+    .btn.install {
+      min-width: 78px;
+      background: linear-gradient(135deg, #7ec7ff, #79e2c8);
+      box-shadow: 0 8px 16px rgba(106, 199, 219, 0.3);
+    }
+
+    .hud {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      gap: 10px;
+      margin-bottom: 10px;
+    }
+
+    .pill {
+      position: relative;
+      border-radius: 16px;
+      min-height: 58px;
+      padding: 8px 10px;
+      background: rgba(255, 255, 255, 0.9);
+      box-shadow: inset 0 2px 8px rgba(163, 189, 226, 0.25);
+      color: var(--text);
+      display: grid;
+      align-content: center;
+      overflow: hidden;
+    }
+
+    .pill .label {
+      font-size: 12px;
+      font-weight: 800;
+      opacity: 0.8;
+    }
+
+    .pill .num {
+      font-size: 24px;
+      font-weight: 900;
+      line-height: 1.1;
+    }
+
+    .score-bubble {
+      position: absolute;
+      left: 0;
+      top: 0;
+      color: #ff5f98;
+      font-size: 20px;
+      font-weight: 900;
+      text-shadow: 0 2px 0 rgba(255, 255, 255, 0.7);
+      animation: scoreFloat 0.72s ease-out forwards;
+      pointer-events: none;
+      will-change: transform, opacity;
+    }
+
+    @keyframes scoreFloat {
+      0% { transform: translate(-50%, -30%) scale(0.8); opacity: 0; }
+      20% { opacity: 1; }
+      100% { transform: translate(-50%, -95%) scale(1.08); opacity: 0; }
+    }
+
+    .goal {
+      margin: 0 0 10px;
+      color: #526182;
+      background: rgba(255, 255, 255, 0.9);
+      border-radius: 16px;
+      padding: 10px 12px;
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 8px;
+      align-items: center;
+      box-shadow: inset 0 2px 8px rgba(163, 189, 226, 0.2);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .goal-main {
+      display: grid;
+      gap: 1px;
+    }
+
+    .goal-target {
+      font-size: clamp(28px, 7vw, 38px);
+      font-weight: 900;
+      line-height: 1.05;
+      color: #425171;
+      letter-spacing: 0.3px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .goal-mini {
+      font-size: 12px;
+      font-weight: 800;
+      opacity: 0.8;
+    }
+
+    .goal-stage {
+      min-width: 74px;
+      min-height: 52px;
+      border-radius: 14px;
+      display: grid;
+      place-items: center;
+      text-align: center;
+      background: linear-gradient(140deg, #ffe3f1, #fff0bc);
+      color: #5a5b77;
+      font-weight: 900;
+      font-size: 12px;
+      line-height: 1.2;
+      padding: 6px 8px;
+    }
+
+    .goal-reward {
+      position: absolute;
+      right: 12px;
+      bottom: 6px;
+      font-size: 14px;
+      font-weight: 900;
+      color: #ff5f98;
+      text-shadow: 0 2px 0 rgba(255, 255, 255, 0.65);
+      pointer-events: none;
+      animation: rewardPop 0.68s ease-out forwards;
+      will-change: transform, opacity;
+    }
+
+    @keyframes rewardPop {
+      0% { transform: translateY(8px) scale(0.8); opacity: 0; }
+      25% { opacity: 1; }
+      100% { transform: translateY(-34px) scale(1.05); opacity: 0; }
+    }
+
+    .board {
+      position: relative;
+      width: 100%;
+      aspect-ratio: 1;
+      border-radius: 24px;
+      background: linear-gradient(145deg, rgba(255, 255, 255, 0.95), rgba(245, 255, 254, 0.85));
+      box-shadow: inset 0 8px 22px rgba(173, 197, 235, 0.25);
+      overflow: hidden;
+      touch-action: none;
+      user-select: none;
+    }
+
+    .slot {
+      position: absolute;
+      border-radius: var(--radius);
+      background: rgba(190, 214, 255, 0.24);
+      box-shadow: inset 0 2px 6px rgba(255, 255, 255, 0.75);
+      pointer-events: none;
+    }
+
+    .tile {
+      position: absolute;
+      border: 0;
+      border-radius: 20px;
+      display: grid;
+      place-items: center;
+      overflow: hidden;
+      cursor: pointer;
+      color: #fff;
+      transition: transform 0.22s cubic-bezier(0.2, 1.25, 0.34, 1);
+      box-shadow:
+        inset 0 5px 8px rgba(255, 255, 255, 0.55),
+        inset 0 -6px 10px rgba(0, 0, 0, 0.08),
+        0 9px 14px rgba(96, 122, 161, 0.18);
+      will-change: transform;
+      contain: layout paint;
+    }
+
+    .emoji {
+      font-size: clamp(32px, 8vw, 48px);
+      line-height: 1;
+      transform: translateY(1px);
+      filter: drop-shadow(0 2px 2px rgba(0, 0, 0, 0.16));
+      pointer-events: none;
+    }
+
+    .value {
+      position: absolute;
+      top: 6px;
+      right: 7px;
+      font-size: 11px;
+      font-weight: 900;
+      line-height: 1;
+      padding: 3px 6px;
+      border-radius: 999px;
+      background: rgba(255, 255, 255, 0.28);
+      color: rgba(255, 255, 255, 0.98);
+      pointer-events: none;
+    }
+
+    .tile::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: rgba(255, 255, 255, 0);
+      pointer-events: none;
+    }
+
+    .tile.spawn-pop { animation: spawnPop 0.22s cubic-bezier(0.15, 1.4, 0.3, 1) both; }
+    .tile.merge-pop { animation: mergePop 0.22s ease-out both; }
+    .tile.merge-pop::after { animation: flash 0.18s ease-out; }
+
+    @keyframes mergePop {
+      0% { transform: translate3d(var(--tx), var(--ty), 0) scale(1); }
+      60% { transform: translate3d(var(--tx), var(--ty), 0) scale(1.2); }
+      100% { transform: translate3d(var(--tx), var(--ty), 0) scale(1); }
+    }
+
+    @keyframes flash {
+      0% { background: rgba(255, 255, 255, 0.75); }
+      100% { background: rgba(255, 255, 255, 0); }
+    }
+
+    @keyframes spawnPop {
+      0% { transform: translate3d(var(--tx), var(--ty), 0) scale(0.4); opacity: 0.2; }
+      100% { transform: translate3d(var(--tx), var(--ty), 0) scale(1); opacity: 1; }
+    }
+
+    .status {
+      margin: 10px 0 0;
+      min-height: 20px;
+      color: #2f8f6e;
+      font-weight: 900;
+      font-size: 14px;
+      letter-spacing: 0.2px;
+    }
+
+    .install-tip {
+      margin: 8px 0 0;
+      min-height: 18px;
+      font-size: 12px;
+      font-weight: 800;
+      color: #587198;
+      opacity: 0.9;
+    }
+
+    .install-row {
+      margin-top: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+    }
+
+    .help-btn {
+      border: 0;
+      min-height: 40px;
+      padding: 0 12px;
+      border-radius: 12px;
+      font-size: 13px;
+      font-weight: 900;
+      color: #4f6388;
+      background: rgba(255, 255, 255, 0.85);
+      box-shadow: inset 0 2px 6px rgba(163, 189, 226, 0.2);
+      cursor: pointer;
+      white-space: nowrap;
+    }
+
+    .install-guide {
+      position: fixed;
+      inset: 0;
+      background: rgba(40, 54, 85, 0.35);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      z-index: 4;
+      padding: 16px;
+    }
+
+    .install-guide.show {
+      display: flex;
+    }
+
+    .guide-card {
+      width: min(92vw, 420px);
+      border-radius: 22px;
+      background: linear-gradient(150deg, #fff1f9, #fff6cc 52%, #dbfff0);
+      box-shadow: 0 20px 42px rgba(67, 88, 127, 0.3);
+      padding: 14px;
+    }
+
+    .guide-title {
+      margin: 0 0 10px;
+      font-size: 24px;
+      font-weight: 900;
+      color: #4a5c82;
+      text-align: center;
+    }
+
+    .guide-steps {
+      margin: 0;
+      padding-left: 20px;
+      color: #526489;
+      font-size: 14px;
+      font-weight: 800;
+      line-height: 1.45;
+    }
+
+    .guide-actions {
+      margin-top: 12px;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+    }
+
+    .guide-btn {
+      min-height: 46px;
+      border: 0;
+      border-radius: 12px;
+      font-size: 14px;
+      font-weight: 900;
+      color: #fff;
+      background: linear-gradient(135deg, #7ec7ff, #79e2c8);
+      cursor: pointer;
+    }
+
+    .guide-btn.close {
+      background: linear-gradient(135deg, #ff9dc6, #ffb774);
+    }
+
+    .level-celebration {
+      position: fixed;
+      inset: 0;
+      display: grid;
+      place-items: center;
+      pointer-events: none;
+      opacity: 0;
+      z-index: 3;
+    }
+
+    .level-celebration.show {
+      animation: levelFxFade 1.4s ease-out forwards;
+    }
+
+    .level-card {
+      min-width: min(82vw, 360px);
+      border-radius: 24px;
+      padding: 18px 18px 16px;
+      text-align: center;
+      background:
+        radial-gradient(circle at 20% 15%, rgba(255, 255, 255, 0.65) 0 25%, transparent 26%),
+        linear-gradient(140deg, #ffe0f0, #fff3b8 52%, #d0fff0);
+      box-shadow: 0 24px 45px rgba(73, 99, 142, 0.28);
+      transform: scale(0.8);
+      will-change: transform, opacity;
+    }
+
+    .level-celebration.show .level-card {
+      animation: levelCardPop 1.4s cubic-bezier(0.2, 1.25, 0.3, 1);
+    }
+
+    .fx-title {
+      font-size: clamp(28px, 8vw, 42px);
+      font-weight: 900;
+      color: #455575;
+      line-height: 1.05;
+    }
+
+    .fx-sub {
+      margin-top: 4px;
+      font-size: 15px;
+      font-weight: 900;
+      color: #5e6f92;
+    }
+
+    .fx-reward {
+      margin-top: 8px;
+      display: inline-block;
+      padding: 7px 12px;
+      border-radius: 999px;
+      font-size: 16px;
+      font-weight: 900;
+      color: #fff;
+      background: linear-gradient(135deg, #ff77ab, #ffb27b);
+      box-shadow: 0 8px 16px rgba(255, 128, 166, 0.33);
+    }
+
+    @keyframes levelFxFade {
+      0% { opacity: 0; }
+      15% { opacity: 1; }
+      82% { opacity: 1; }
+      100% { opacity: 0; }
+    }
+
+    @keyframes levelCardPop {
+      0% { transform: scale(0.78) translateY(14px); }
+      26% { transform: scale(1.05) translateY(0); }
+      100% { transform: scale(1) translateY(0); }
+    }
+
+    #confetti {
+      position: fixed;
+      inset: 0;
+      width: 100vw;
+      height: 100vh;
+      pointer-events: none;
+      z-index: 1;
+    }
+
+    @media (max-width: 420px) {
+      .game-wrap { padding: 14px; }
+      .hud { gap: 8px; }
+      .btn { min-width: 86px; }
+      .btn.install { min-width: 74px; }
+      .pill .num { font-size: 21px; }
+      .guide-steps { font-size: 13px; }
+    }
+  </style>
+</head>
+<body>
+  <canvas id="confetti"></canvas>
+  <div class="level-celebration" id="levelFX" aria-live="polite"></div>
+  <div class="install-guide" id="installGuide" aria-live="polite" aria-modal="true" role="dialog">
+    <div class="guide-card">
+      <h2 class="guide-title" id="guideTitle">📲 安装到手机</h2>
+      <ol class="guide-steps" id="guideSteps">
+        <li>打开浏览器菜单。</li>
+        <li>选择“安装应用”或“添加到主屏幕”。</li>
+        <li>从桌面图标打开，首次在线后可离线玩。</li>
+      </ol>
+      <div class="guide-actions">
+        <button id="guideInstallBtn" class="guide-btn" type="button">现在安装</button>
+        <button id="guideCloseBtn" class="guide-btn close" type="button">我知道了</button>
+      </div>
+    </div>
+  </div>
+
+  <main class="game-wrap">
+    <div class="header">
+      <h1 class="title">小猫探险家</h1>
+      <div class="header-actions">
+        <button id="installBtn" class="btn install" type="button">安装</button>
+        <button id="resetBtn" class="btn" type="button">重开</button>
+      </div>
+    </div>
+
+    <div class="hud">
+      <div class="pill" id="scorePill">
+        <span class="label">分数</span>
+        <span class="num" id="scoreNum">0</span>
+      </div>
+      <div class="pill">
+        <span class="label">步数</span>
+        <span class="num" id="moveNum">0</span>
+      </div>
+      <div class="pill">
+        <span class="label">最高</span>
+        <span class="num" id="bestNum">0</span>
+      </div>
+    </div>
+
+    <div class="goal" id="goalCard">
+      <div class="goal-main">
+        <span class="goal-target" id="goalTarget">🍍 64</span>
+        <span class="goal-mini" id="goalMini">目标</span>
+      </div>
+      <div class="goal-stage" id="goalStage">Lv.1</div>
+    </div>
+    <section id="board" class="board" aria-label="4x4 合成华容道棋盘"></section>
+    <p class="status" id="statusText" aria-live="polite"></p>
+    <div class="install-row">
+      <p class="install-tip" id="installTip"></p>
+      <button id="guideBtn" class="help-btn" type="button">安装帮助</button>
+    </div>
+  </main>
+
+  <script>
+    (() => {
+      const size = 4;
+      const startTargetLevel = 6;
+
+      const board = document.getElementById('board');
+      const installBtn = document.getElementById('installBtn');
+      const resetBtn = document.getElementById('resetBtn');
+      const scoreNum = document.getElementById('scoreNum');
+      const moveNum = document.getElementById('moveNum');
+      const bestNum = document.getElementById('bestNum');
+      const goalCard = document.getElementById('goalCard');
+      const goalTarget = document.getElementById('goalTarget');
+      const goalMini = document.getElementById('goalMini');
+      const goalStage = document.getElementById('goalStage');
+      const statusText = document.getElementById('statusText');
+      const installTip = document.getElementById('installTip');
+      const levelFX = document.getElementById('levelFX');
+      const guideBtn = document.getElementById('guideBtn');
+      const installGuide = document.getElementById('installGuide');
+      const guideTitle = document.getElementById('guideTitle');
+      const guideSteps = document.getElementById('guideSteps');
+      const guideInstallBtn = document.getElementById('guideInstallBtn');
+      const guideCloseBtn = document.getElementById('guideCloseBtn');
+
+      const confettiCanvas = document.getElementById('confetti');
+      const confettiCtx = confettiCanvas.getContext('2d');
+
+      const bgPalette = [
+        ['#ff8fb1', '#ffb1c9'], ['#ffad74', '#ffd18f'], ['#ffd166', '#ffe694'],
+        ['#9ee37d', '#c4f09f'], ['#79d7ff', '#a1e8ff'], ['#8eb8ff', '#adc9ff'],
+        ['#a99eff', '#c4bbff'], ['#d5a2ff', '#e6c3ff'], ['#ff9edc', '#ffbeea'],
+        ['#93f0d9', '#b4ffe9'], ['#ffa9a4', '#ffc0be'], ['#7de4d0', '#aaf6e7']
+      ];
+
+      const fruits = ['🍓', '🍊', '🍉', '🍇', '🍍', '🥝', '🍒', '🍑', '🥥', '🍐', '🫐', '🍋'];
+      const confettiColors = ['#ff7eb6', '#ffd166', '#7ed6ff', '#9eff9f', '#b39dff', '#ff9f80'];
+
+      const state = {
+        cells: Array(size * size).fill(null),
+        tiles: new Map(),
+        nextId: 1,
+        empty: size * size - 1,
+        moves: 0,
+        score: 0,
+        bestScore: 0,
+        busy: false,
+        stage: 1,
+        targetLevel: startTargetLevel,
+        cell: 0,
+        gap: 0,
+        swipeStart: null,
+        audioCtx: null,
+        audioReady: false,
+        confettiParticles: [],
+        confettiRAF: 0,
+        deferredInstallPrompt: null
+      };
+
+      function isIOS() {
+        return /iphone|ipad|ipod/i.test(window.navigator.userAgent);
+      }
+
+      function setGuideContent() {
+        if (isIOS()) {
+          guideTitle.textContent = '🍎 iPhone 安装';
+          guideSteps.innerHTML = '<li>请使用 Safari 打开游戏。</li><li>点“分享”按钮。</li><li>点“添加到主屏幕”，首次在线后可离线玩。</li>';
+          return;
+        }
+        guideTitle.textContent = '🤖 安卓安装';
+        guideSteps.innerHTML = '<li>点上方“安装”按钮。</li><li>或在浏览器菜单点“安装应用”。</li><li>从桌面图标打开，首次在线后可离线玩。</li>';
+      }
+
+      function openInstallGuide(markSeen) {
+        setGuideContent();
+        installGuide.classList.add('show');
+        if (markSeen) window.localStorage.setItem('cat-explorer-install-guide-seen-v1', '1');
+      }
+
+      function closeInstallGuide() {
+        installGuide.classList.remove('show');
+      }
+
+      function readBestScore() {
+        const raw = window.localStorage.getItem('cat-explorer-best-score') || '0';
+        const parsed = Number(raw);
+        state.bestScore = Number.isFinite(parsed) && parsed > 0 ? parsed : 0;
+        bestNum.textContent = String(state.bestScore);
+      }
+
+      function writeBestScoreIfNeeded() {
+        if (state.score <= state.bestScore) return;
+        state.bestScore = state.score;
+        bestNum.textContent = String(state.bestScore);
+        window.localStorage.setItem('cat-explorer-best-score', String(state.bestScore));
+      }
+
+      function setupInstallUX() {
+        const isStandalone = window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone === true;
+        const iosDevice = isIOS();
+
+        if (isStandalone) {
+          installBtn.style.display = 'none';
+          guideBtn.style.display = 'none';
+          installTip.textContent = '已安装，可离线玩';
+          return;
+        }
+
+        if (iosDevice) {
+          installTip.textContent = 'iPhone: Safari 分享 -> 添加到主屏幕';
+        }
+
+        window.addEventListener('beforeinstallprompt', (e) => {
+          e.preventDefault();
+          state.deferredInstallPrompt = e;
+          installBtn.style.display = 'inline-block';
+          if (!iosDevice) installTip.textContent = '点“安装”即可下载到桌面';
+        });
+
+        window.addEventListener('appinstalled', () => {
+          installBtn.style.display = 'none';
+          installTip.textContent = '安装完成，可离线玩';
+          state.deferredInstallPrompt = null;
+        });
+      }
+
+      async function onInstallClick() {
+        ensureAudio();
+        const iosDevice = isIOS();
+        if (state.deferredInstallPrompt) {
+          state.deferredInstallPrompt.prompt();
+          await state.deferredInstallPrompt.userChoice;
+          state.deferredInstallPrompt = null;
+          return;
+        }
+        if (iosDevice) {
+          installTip.textContent = '请点 Safari 分享按钮，再点“添加到主屏幕”';
+          openInstallGuide(true);
+          return;
+        }
+        installTip.textContent = '请在浏览器菜单中选择“安装应用”';
+        openInstallGuide(true);
+      }
+
+      function registerServiceWorker() {
+        if (!('serviceWorker' in navigator)) return;
+        navigator.serviceWorker.register('./sw.js').catch(() => {});
+      }
+
+      function idxToRC(index) {
+        return { r: Math.floor(index / size), c: index % size };
+      }
+
+      function rcToIdx(r, c) {
+        return r * size + c;
+      }
+
+      function validRC(r, c) {
+        return r >= 0 && r < size && c >= 0 && c < size;
+      }
+
+      function isAdjacent(a, b) {
+        const ar = Math.floor(a / size), ac = a % size;
+        const br = Math.floor(b / size), bc = b % size;
+        return Math.abs(ar - br) + Math.abs(ac - bc) === 1;
+      }
+
+      function levelToValue(level) {
+        return 2 ** level;
+      }
+
+      function levelToFruit(level) {
+        return fruits[Math.min(level, fruits.length) - 1] || '🍎';
+      }
+
+      function resizeConfettiCanvas() {
+        confettiCanvas.width = window.innerWidth;
+        confettiCanvas.height = window.innerHeight;
+      }
+
+      function ensureAudio() {
+        if (!state.audioCtx) {
+          const Ctx = window.AudioContext || window.webkitAudioContext;
+          if (!Ctx) return;
+          state.audioCtx = new Ctx();
+        }
+        if (state.audioCtx.state === 'suspended') {
+          state.audioCtx.resume();
+        }
+        state.audioReady = true;
+      }
+
+      function playSwipeSound() {
+        if (!state.audioReady || !state.audioCtx) return;
+        const ctx = state.audioCtx;
+        const now = ctx.currentTime;
+        const osc = ctx.createOscillator();
+        const gain = ctx.createGain();
+
+        osc.type = 'triangle';
+        osc.frequency.setValueAtTime(920, now);
+        osc.frequency.exponentialRampToValueAtTime(460, now + 0.08);
+
+        gain.gain.setValueAtTime(0.0001, now);
+        gain.gain.exponentialRampToValueAtTime(0.05, now + 0.015);
+        gain.gain.exponentialRampToValueAtTime(0.0001, now + 0.09);
+
+        osc.connect(gain).connect(ctx.destination);
+        osc.start(now);
+        osc.stop(now + 0.1);
+      }
+
+      function playMergeSound() {
+        if (!state.audioReady || !state.audioCtx) return;
+        const ctx = state.audioCtx;
+        const now = ctx.currentTime;
+        const osc = ctx.createOscillator();
+        const gain = ctx.createGain();
+
+        osc.type = 'sine';
+        osc.frequency.setValueAtTime(700, now);
+        osc.frequency.exponentialRampToValueAtTime(1250, now + 0.11);
+
+        gain.gain.setValueAtTime(0.0001, now);
+        gain.gain.exponentialRampToValueAtTime(0.09, now + 0.02);
+        gain.gain.exponentialRampToValueAtTime(0.0001, now + 0.13);
+
+        osc.connect(gain).connect(ctx.destination);
+        osc.start(now);
+        osc.stop(now + 0.14);
+      }
+
+      function playGoalMelody() {
+        if (!state.audioReady || !state.audioCtx) return;
+        const ctx = state.audioCtx;
+        const now = ctx.currentTime;
+        const notes = [659, 784, 988, 1047, 1175, 1319];
+
+        notes.forEach((freq, i) => {
+          const t = now + i * 0.12;
+          const osc = ctx.createOscillator();
+          const gain = ctx.createGain();
+
+          osc.type = 'triangle';
+          osc.frequency.setValueAtTime(freq, t);
+
+          gain.gain.setValueAtTime(0.0001, t);
+          gain.gain.exponentialRampToValueAtTime(0.08, t + 0.02);
+          gain.gain.exponentialRampToValueAtTime(0.0001, t + 0.11);
+
+          osc.connect(gain).connect(ctx.destination);
+          osc.start(t);
+          osc.stop(t + 0.12);
+        });
+      }
+
+      function launchConfetti(duration = 1500) {
+        resizeConfettiCanvas();
+        const w = confettiCanvas.width;
+        const h = confettiCanvas.height;
+        state.confettiParticles = [];
+
+        for (let i = 0; i < 130; i += 1) {
+          state.confettiParticles.push({
+            x: Math.random() * w,
+            y: -20 - Math.random() * h * 0.3,
+            vx: (Math.random() - 0.5) * 5,
+            vy: 2 + Math.random() * 4,
+            g: 0.06 + Math.random() * 0.08,
+            r: 4 + Math.random() * 5,
+            rot: Math.random() * Math.PI,
+            vr: (Math.random() - 0.5) * 0.25,
+            color: confettiColors[(Math.random() * confettiColors.length) | 0]
+          });
+        }
+
+        cancelAnimationFrame(state.confettiRAF);
+        const start = performance.now();
+
+        const tick = (ts) => {
+          const elapsed = ts - start;
+          confettiCtx.clearRect(0, 0, w, h);
+
+          state.confettiParticles.forEach((p) => {
+            p.x += p.vx;
+            p.y += p.vy;
+            p.vy += p.g;
+            p.rot += p.vr;
+
+            confettiCtx.save();
+            confettiCtx.translate(p.x, p.y);
+            confettiCtx.rotate(p.rot);
+            confettiCtx.fillStyle = p.color;
+            confettiCtx.fillRect(-p.r, -p.r * 0.6, p.r * 2, p.r * 1.2);
+            confettiCtx.restore();
+          });
+
+          if (elapsed < duration) {
+            state.confettiRAF = requestAnimationFrame(tick);
+          } else {
+            confettiCtx.clearRect(0, 0, w, h);
+          }
+        };
+
+        state.confettiRAF = requestAnimationFrame(tick);
+      }
+
+      function layoutMetrics() {
+        const boardSize = board.getBoundingClientRect().width;
+        state.gap = Math.max(8, Math.floor(boardSize * 0.022));
+        state.cell = Math.floor((boardSize - state.gap * (size + 1)) / size);
+      }
+
+      function paintSlots() {
+        board.querySelectorAll('.slot').forEach((n) => n.remove());
+        for (let i = 0; i < size * size; i += 1) {
+          const { r, c } = idxToRC(i);
+          const slot = document.createElement('div');
+          slot.className = 'slot';
+          slot.style.left = `${state.gap + c * (state.cell + state.gap)}px`;
+          slot.style.top = `${state.gap + r * (state.cell + state.gap)}px`;
+          slot.style.width = `${state.cell}px`;
+          slot.style.height = `${state.cell}px`;
+          board.appendChild(slot);
+        }
+      }
+
+      function setTileTransform(el, boardIndex) {
+        const { r, c } = idxToRC(boardIndex);
+        const x = state.gap + c * (state.cell + state.gap);
+        const y = state.gap + r * (state.cell + state.gap);
+        el.style.setProperty('--tx', `${x}px`);
+        el.style.setProperty('--ty', `${y}px`);
+        el.style.transform = `translate3d(${x}px, ${y}px, 0)`;
+      }
+
+      function styleTileByLevel(el, level) {
+        const [c1, c2] = bgPalette[(level - 1) % bgPalette.length];
+        el.style.background = `linear-gradient(145deg, ${c1}, ${c2})`;
+      }
+
+      function updateTileFace(tile) {
+        tile.el.querySelector('.emoji').textContent = levelToFruit(tile.level);
+        tile.el.querySelector('.value').textContent = levelToValue(tile.level);
+        styleTileByLevel(tile.el, tile.level);
+      }
+
+      function createTile(level, index, spawnAnim) {
+        const id = state.nextId;
+        state.nextId += 1;
+
+        const el = document.createElement('button');
+        el.type = 'button';
+        el.className = 'tile';
+        el.innerHTML = '<span class="emoji"></span><span class="value"></span>';
+        el.style.width = `${state.cell}px`;
+        el.style.height = `${state.cell}px`;
+
+        const tile = { id, level, el };
+        updateTileFace(tile);
+
+        el.addEventListener('click', () => {
+          const from = state.cells.findIndex((t) => t && t.id === id);
+          if (from >= 0) tryMove(from);
+        });
+
+        board.appendChild(el);
+        state.tiles.set(id, tile);
+        state.cells[index] = tile;
+        setTileTransform(el, index);
+
+        if (spawnAnim) {
+          el.classList.add('spawn-pop');
+          setTimeout(() => el.classList.remove('spawn-pop'), 260);
+        }
+      }
+
+      function clearAllTiles() {
+        state.tiles.forEach((tile) => tile.el.remove());
+        state.tiles.clear();
+        state.cells.fill(null);
+      }
+
+      function findEmptyIndices() {
+        const out = [];
+        for (let i = 0; i < state.cells.length; i += 1) {
+          if (!state.cells[i]) out.push(i);
+        }
+        return out;
+      }
+
+      function addScore(points, anchorEl) {
+        state.score += points;
+        scoreNum.textContent = String(state.score);
+        writeBestScoreIfNeeded();
+
+        const bubble = document.createElement('span');
+        bubble.className = 'score-bubble';
+        bubble.textContent = `+${points}`;
+        const boardRect = board.getBoundingClientRect();
+        const anchorRect = anchorEl.getBoundingClientRect();
+        const cx = anchorRect.left - boardRect.left + anchorRect.width / 2;
+        const cy = anchorRect.top - boardRect.top + anchorRect.height / 2;
+        bubble.style.left = `${cx}px`;
+        bubble.style.top = `${cy}px`;
+        board.appendChild(bubble);
+        setTimeout(() => bubble.remove(), 760);
+      }
+
+      function showGoalReward(text) {
+        const reward = document.createElement('span');
+        reward.className = 'goal-reward';
+        reward.textContent = text;
+        goalCard.appendChild(reward);
+        setTimeout(() => reward.remove(), 720);
+      }
+
+      function showLevelCelebration(clearedValue, nextValue, reward, stage, fruit) {
+        levelFX.innerHTML = `
+          <div class="level-card">
+            <div class="fx-title">${fruit} 通关!</div>
+            <div class="fx-sub">Lv.${stage} 完成 ${clearedValue} -> ${nextValue}</div>
+            <div class="fx-reward">奖励 +${reward}</div>
+          </div>
+        `;
+        levelFX.classList.remove('show');
+        void levelFX.offsetWidth;
+        levelFX.classList.add('show');
+        setTimeout(() => levelFX.classList.remove('show'), 1400);
+      }
+
+      function refreshHud() {
+        moveNum.textContent = String(state.moves);
+        bestNum.textContent = String(state.bestScore);
+        goalTarget.textContent = `${levelToFruit(state.targetLevel)} ${levelToValue(state.targetLevel)}`;
+        goalMini.textContent = '目标';
+        goalStage.textContent = `Lv.${state.stage}`;
+      }
+
+      function reset() {
+        state.moves = 0;
+        state.score = 0;
+        state.busy = false;
+        state.stage = 1;
+        state.targetLevel = startTargetLevel;
+        state.swipeStart = null;
+        state.nextId = 1;
+        statusText.textContent = '';
+
+        clearAllTiles();
+
+        const indices = [...Array(size * size).keys()];
+        for (let i = indices.length - 1; i > 0; i -= 1) {
+          const j = (Math.random() * (i + 1)) | 0;
+          [indices[i], indices[j]] = [indices[j], indices[i]];
+        }
+
+        state.empty = indices[0];
+        for (let i = 1; i < indices.length; i += 1) {
+          const level = Math.random() < 0.85 ? 1 : 2;
+          createTile(level, indices[i], false);
+        }
+
+        scoreNum.textContent = '0';
+        refreshHud();
+      }
+
+      function removeTileAt(index) {
+        const tile = state.cells[index];
+        if (!tile) return;
+        state.cells[index] = null;
+        state.tiles.delete(tile.id);
+        tile.el.remove();
+      }
+
+      function spawnLevelOneIfPossible() {
+        const empties = findEmptyIndices();
+        if (empties.length <= 1) return;
+        const index = empties[(Math.random() * empties.length) | 0];
+        createTile(1, index, true);
+      }
+
+      function checkGoal(level, anchorEl) {
+        if (level < state.targetLevel) return;
+        const clearedValue = levelToValue(state.targetLevel);
+        const nextValue = levelToValue(state.targetLevel + 1);
+        const clearedFruit = levelToFruit(state.targetLevel);
+        const currentStage = state.stage;
+        const bonus = clearedValue * 2;
+        addScore(bonus, anchorEl);
+        showGoalReward(`+${bonus}`);
+        showLevelCelebration(clearedValue, nextValue, bonus, currentStage, clearedFruit);
+        statusText.textContent = `${nextValue}`;
+        launchConfetti();
+        playGoalMelody();
+        state.stage += 1;
+        state.targetLevel += 1;
+        refreshHud();
+      }
+
+      function finalizeMove(movedFrom, movedTo) {
+        const movedTile = state.cells[movedTo];
+        if (!movedTile) {
+          state.busy = false;
+          return;
+        }
+
+        const fr = Math.floor(movedFrom / size);
+        const fc = movedFrom % size;
+        const tr = Math.floor(movedTo / size);
+        const tc = movedTo % size;
+        const dr = tr - fr;
+        const dc = tc - fc;
+
+        const frontR = tr + dr;
+        const frontC = tc + dc;
+        let merged = false;
+
+        if (validRC(frontR, frontC)) {
+          const frontIndex = rcToIdx(frontR, frontC);
+          const frontTile = state.cells[frontIndex];
+          if (frontTile && frontTile.level === movedTile.level) {
+            removeTileAt(frontIndex);
+            movedTile.level += 1;
+            updateTileFace(movedTile);
+            movedTile.el.classList.add('merge-pop');
+            setTimeout(() => movedTile.el.classList.remove('merge-pop'), 220);
+            addScore(levelToValue(movedTile.level), movedTile.el);
+            playMergeSound();
+            checkGoal(movedTile.level, movedTile.el);
+            merged = true;
+          }
+        }
+
+        spawnLevelOneIfPossible();
+
+        const empties = findEmptyIndices();
+        if (empties.length > 0) {
+          state.empty = empties[(Math.random() * empties.length) | 0];
+        }
+
+        if (!merged) statusText.textContent = '';
+        refreshHud();
+        state.busy = false;
+      }
+
+      function tryMove(fromIndex) {
+        if (state.busy) return false;
+        const tile = state.cells[fromIndex];
+        if (!tile) return false;
+
+        const toIndex = state.empty;
+        if (!isAdjacent(fromIndex, toIndex)) return false;
+
+        playSwipeSound();
+
+        state.busy = true;
+        state.cells[toIndex] = tile;
+        state.cells[fromIndex] = null;
+        state.empty = fromIndex;
+        state.moves += 1;
+
+        setTileTransform(tile.el, toIndex);
+
+        let done = false;
+        const finish = () => {
+          if (done) return;
+          done = true;
+          finalizeMove(fromIndex, toIndex);
+        };
+
+        tile.el.addEventListener('transitionend', finish, { once: true });
+        setTimeout(finish, 240);
+
+        return true;
+      }
+
+      function moveByDirection(dir) {
+        if (state.busy) return;
+
+        const er = Math.floor(state.empty / size);
+        const ec = state.empty % size;
+        let tr = er;
+        let tc = ec;
+
+        if (dir === 'left') tc += 1;
+        if (dir === 'right') tc -= 1;
+        if (dir === 'up') tr += 1;
+        if (dir === 'down') tr -= 1;
+
+        if (!validRC(tr, tc)) return;
+        tryMove(rcToIdx(tr, tc));
+      }
+
+      function boardIndexFromPoint(clientX, clientY) {
+        const rect = board.getBoundingClientRect();
+        const x = clientX - rect.left;
+        const y = clientY - rect.top;
+        if (x < 0 || y < 0 || x > rect.width || y > rect.height) return -1;
+
+        const unit = state.cell + state.gap;
+        const col = Math.floor((x - state.gap) / unit);
+        const row = Math.floor((y - state.gap) / unit);
+        if (!validRC(row, col)) return -1;
+        return rcToIdx(row, col);
+      }
+
+      function onTouchStart(e) {
+        const t = e.touches && e.touches[0];
+        if (!t) return;
+        ensureAudio();
+        state.swipeStart = {
+          x: t.clientX,
+          y: t.clientY,
+          index: boardIndexFromPoint(t.clientX, t.clientY)
+        };
+      }
+
+      function onTouchEndLike(clientX, clientY) {
+        if (!state.swipeStart) return;
+
+        const dx = clientX - state.swipeStart.x;
+        const dy = clientY - state.swipeStart.y;
+        const absX = Math.abs(dx);
+        const absY = Math.abs(dy);
+        const tapThreshold = 14;
+
+        if (absX < tapThreshold && absY < tapThreshold) {
+          const index = state.swipeStart.index;
+          state.swipeStart = null;
+          if (index >= 0) tryMove(index);
+          return;
+        }
+
+        const dir = absX > absY ? (dx > 0 ? 'right' : 'left') : (dy > 0 ? 'down' : 'up');
+        state.swipeStart = null;
+        moveByDirection(dir);
+      }
+
+      function onTouchEnd(e) {
+        const t = e.changedTouches && e.changedTouches[0];
+        if (!t) return;
+        onTouchEndLike(t.clientX, t.clientY);
+      }
+
+      function onResize() {
+        resizeConfettiCanvas();
+        layoutMetrics();
+        paintSlots();
+
+        for (let i = 0; i < state.cells.length; i += 1) {
+          const tile = state.cells[i];
+          if (!tile) continue;
+          tile.el.style.width = `${state.cell}px`;
+          tile.el.style.height = `${state.cell}px`;
+          setTileTransform(tile.el, i);
+        }
+      }
+
+      function init() {
+        resizeConfettiCanvas();
+        layoutMetrics();
+        paintSlots();
+        readBestScore();
+        refreshHud();
+        reset();
+        setupInstallUX();
+        registerServiceWorker();
+
+        const guideSeen = window.localStorage.getItem('cat-explorer-install-guide-seen-v1');
+        if (!guideSeen) openInstallGuide(true);
+
+        board.addEventListener('touchstart', onTouchStart, { passive: true });
+        board.addEventListener('touchend', onTouchEnd, { passive: true });
+
+        let mouseDown = false;
+        board.addEventListener('mousedown', (e) => {
+          ensureAudio();
+          mouseDown = true;
+          state.swipeStart = {
+            x: e.clientX,
+            y: e.clientY,
+            index: boardIndexFromPoint(e.clientX, e.clientY)
+          };
+        });
+
+        window.addEventListener('mouseup', (e) => {
+          if (!mouseDown) return;
+          mouseDown = false;
+          onTouchEndLike(e.clientX, e.clientY);
+        });
+
+        installBtn.addEventListener('click', onInstallClick);
+        guideBtn.addEventListener('click', () => openInstallGuide(false));
+        guideInstallBtn.addEventListener('click', onInstallClick);
+        guideCloseBtn.addEventListener('click', closeInstallGuide);
+        installGuide.addEventListener('click', (e) => {
+          if (e.target === installGuide) closeInstallGuide();
+        });
+
+        resetBtn.addEventListener('click', () => {
+          ensureAudio();
+          reset();
+        });
+
+        window.addEventListener('resize', onResize, { passive: true });
+      }
+
+      init();
+    })();
+  </script>
+</body>
+</html>
