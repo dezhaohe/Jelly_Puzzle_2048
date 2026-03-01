@@ -744,21 +744,6 @@
         window.localStorage.setItem('cat-explorer-nickname', name);
       }
 
-      function getOrCreatePlayerId() {
-        const key = 'cat-explorer-player-id';
-        const existing = (window.localStorage.getItem(key) || '').trim();
-        if (/^[A-Za-z0-9_-]{8,80}$/.test(existing)) return existing;
-
-        let created = '';
-        if (window.crypto && typeof window.crypto.randomUUID === 'function') {
-          created = `p_${window.crypto.randomUUID().replace(/-/g, '')}`;
-        } else {
-          created = `p_${Date.now().toString(36)}_${Math.random().toString(36).slice(2, 12)}`;
-        }
-        window.localStorage.setItem(key, created);
-        return created;
-      }
-
       function renderLeaderboard(top) {
         leaderboardList.innerHTML = '';
         if (!Array.isArray(top) || top.length === 0) {
@@ -787,8 +772,7 @@
 
       async function loadLeaderboard() {
         try {
-          const playerId = getOrCreatePlayerId();
-          const res = await fetch(`./api/leaderboard?playerId=${encodeURIComponent(playerId)}`, { cache: 'no-store' });
+          const res = await fetch('./api/leaderboard', { cache: 'no-store' });
           if (!res.ok) throw new Error('load failed');
           const data = await res.json();
           setMyRank(data.me);
@@ -807,14 +791,13 @@
         }
 
         saveNickname(name);
-        const playerId = getOrCreatePlayerId();
         saveScoreBtn.disabled = true;
         saveScoreBtn.textContent = '上传中...';
         try {
           const res = await fetch('./api/score', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ playerId, name, score: state.score })
+            body: JSON.stringify({ name, score: state.score })
           });
           if (!res.ok) throw new Error('submit failed');
           const data = await res.json();
